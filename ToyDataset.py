@@ -107,8 +107,10 @@ def construct_weighted_graph(seq_data):
 
 
         # We can add more custom attributes to the constructor of Data
+        # key should not contain "index" or "face". Otherwise they will be merged.
+        # https://pytorch-geometric.readthedocs.io/en/latest/notes/batching.html
         G = Data(x=unique_node_ids, edge_index=edge_index, edge_attr=edge_attr, num_nodes=unique_node_ids.shape[0],
-                 pos_emb=pos_emb)
+                 pos_emb=pos_emb, last_node_pos=pos2nodeid[-1])
 
         graphs.append(G)
 

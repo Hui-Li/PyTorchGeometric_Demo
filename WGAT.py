@@ -6,7 +6,8 @@ from torch_geometric.nn.inits import glorot
 
 import torch.nn.functional as F
 
-
+# Reference: GATConv
+# https://github.com/rusty1s/pytorch_geometric/blob/40a35ac3cd60413f8a5f436adf9e0e0d8b6af42c/torch_geometric/nn/conv/gat_conv.py
 class WGATConv(MessagePassing):
 
     def __init__(self, in_channels, out_channels, heads=1, negative_slope=0.2, dropout=0, weighted=True):
