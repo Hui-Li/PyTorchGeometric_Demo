@@ -78,7 +78,7 @@ def construct_weighted_graph(seq_data):
 
     :param seq_data: list of batch_size, each has seq_len
     """
-
+    # batch_size x seq_len
     seq_data = torch.stack(seq_data, dim=0)
     batch_size = seq_data.shape[0]
     graphs = []
@@ -102,6 +102,7 @@ def construct_weighted_graph(seq_data):
         for start_node, end_node in zip(start_nodes.tolist(), end_nodes.tolist()):
             edge_weight[(start_node, end_node)] += 1
 
+        # Must be float
         edge_attr = torch.FloatTensor(
             [edge_weight[(start_nodes[i].item(), end_nodes[i].item())] for i in range(start_nodes.shape[0])])
 
@@ -113,6 +114,7 @@ def construct_weighted_graph(seq_data):
                  pos_emb=pos_emb, last_node_pos=pos2nodeid[-1])
 
         graphs.append(G)
+
 
     # https://pytorch-geometric.readthedocs.io/en/latest/notes/batching.html
     # Construct a large graph

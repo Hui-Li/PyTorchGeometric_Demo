@@ -42,7 +42,7 @@ class Seq2Graph(nn.Module):
         :param graph_batch:
         :param hs:  node_num x hidden_size
         """
-
+        # https://pytorch-scatter.readthedocs.io/en/latest/functions/scatter.html
         # batch_size x hidden_size
         hs = scatter(src=hs, index=graph_batch, dim=0, reduce="mean")
 
@@ -54,19 +54,21 @@ class Seq2Graph(nn.Module):
 
     def predict2(self, graph_batch, hs, last_node_pos):
         """
-            draw the attention between each node and the last node
+            draw the attention between each node and the last node (SR-GNN)
         :param graph_batch:
         :param hs:
         :param last_node_pos:
         :return:
         """
+        # https://pytorch.org/docs/stable/generated/torch.bincount.html
         bins = tuple(torch.bincount(graph_batch))
 
         # Back to individual graphs
         # varying length
-        # list of batch_size * num_steps: varying_node_num x hidden_size
+        # list of batch_size: varying_node_num x hidden_size
         batch_unique_node_hs = torch.split(hs, bins)
 
+        # ToDo: slow?
         # batch_size x max_seq_len x hidden_size
         batch_unique_node_hs = torch.nn.utils.rnn.pad_sequence(batch_unique_node_hs, batch_first=True, padding_value=0)
 
@@ -94,8 +96,18 @@ class Seq2Graph(nn.Module):
 
     def forward(self, graphs):
 
+        print("graphs.x:", graphs.x)
+        print("graphs.batch:", graphs.batch)
+        print("graphs.edge_index:", graphs.edge_index)
+        print("graphs.edge_attr:", graphs.edge_attr)
+        print("graphs.num_nodes:", graphs.num_nodes)
+        print("graphs.pos_emb:", graphs.pos_emb)
+        print("graphs.last_node_pos:", graphs.last_node_pos)
+
+        # node_num x emb_size
         hs = self.node_embs(graphs.x)
         # add position embedding
+        # [node_num x emb_size] + [node_num x 1]
         hs = hs + graphs.pos_emb.reshape(hs.shape[0], 1)
 
         if self.weighted:

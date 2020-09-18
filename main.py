@@ -20,6 +20,7 @@ if __name__ == "__main__":
 
     graph_data = GraphData(raw_data=raw_data)
 
+    # collate_fn is the function used for batching
     dataset_loader = DataLoader(dataset=graph_data, batch_size=batch_size,
                                 collate_fn=construct_weighted_graph, shuffle=False)
 
